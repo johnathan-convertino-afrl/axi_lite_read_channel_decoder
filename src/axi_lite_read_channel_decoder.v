@@ -144,7 +144,7 @@ module axi_lite_read_channel_decoder #(
         .m_data({s_axi_rresp, s_axi_rdata}),
         .m_data_last(),
         .m_data_valid(s_axi_rvalid),
-        .m_data_ready(s_axi_rready)
+        .m_data_ready(s_axi_rready),
         .m_data_ack(1'b0)
       );
     end else begin : gen_NO_DATA_BUFFER
