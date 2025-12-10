@@ -133,7 +133,7 @@ module axi_lite_read_channel_decoder #(
         .BUS_WIDTH(BUS_WIDTH*8+2)
       ) inst_data_buffer (
         .clk(aclk),
-        .rstn(arstn),s_axi_bready
+        .rstn(arstn),
         .timeout(r_timeout),
         .enable(w_connected),
         .s_data({m_axi_rresp, m_axi_rdata}),
