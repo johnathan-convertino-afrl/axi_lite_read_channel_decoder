@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("SystemVerilogModule:axi_lite_read_address_decoder",{28:"<div class=\"NDToolTip TModule LSystemVerilog\"><div class=\"TTSummary\">AXI lite address recoder for read channel.</div></div>"});

@@ -1,9 +1,9 @@
 //******************************************************************************
-// file:    axi_lite_rd_addr.v
+// file:    axi_lite_read_channel_decoder.v
 //
 // author:  JAY CONVERTINO
 //
-// date:    2025/12/01
+// date:    2025/12/16
 //
 // about:   Brief
 // Verify read address and contain holdbuffer interface. Valid address? Allow output till invalid address presented.
@@ -36,19 +36,40 @@
 `default_nettype none
 
 /*
- * Module: axi_lite_rd_addr
+ * Module: axi_lite_read_address_decoder
  *
- * APB3 slave to uP interface
+ * AXI lite address recoder for read channel.
  *
  * Parameters:
  *
  *   ADDRESS_WIDTH    - Width of the AXI LITE address port in bits.
  *   BUS_WIDTH        - Width of the AXI LITE bus data port in bytes.
+ *   DATA_BUFFER      - Buffer data channel, 0 to disable.
+ *   TIMEOUT_BEATS    - Number of clock cycles (beats) to count till timeout. 0 disables timeout.
  *   SLAVE_ADDRESS    - Array of Addresses for each slave (0 = slave 0 and so on).
  *   SLAVE_REGION     - Region for the address that is valid for the SLAVE ADDRESS.
  *
  * Ports:
  *
+ *   connected        - Core has established channel connection
+ *   aclk             - Input clock
+ *   arstn            - Input negative reset
+ *   s_axi_araddr     - Slave read chanel input address.
+ *   s_axi_arprot     - Slave read chanel input address protection
+ *   s_axi_arvalid    - Slave read chanel input address is valid
+ *   s_axi_arready    - Slave read chanel input is ready.
+ *   s_axi_rdata      - Slave read chanel input data.
+ *   s_axi_rresp      - Slave read chanel input data response.
+ *   s_axi_rvalid     - Slave read chanel input data valid
+ *   s_axi_rready     - Slave read chanel input is ready.
+ *   m_axi_araddr     - Master read chanel output address.
+ *   m_axi_arprot     - Master read chanel output address protection
+ *   m_axi_arvalid    - Master read chanel output address is valid
+ *   m_axi_arready    - Master read chanel output is ready.
+ *   m_axi_rdata      - Master read chanel output data.
+ *   m_axi_rresp      - Master read chanel output data response.
+ *   m_axi_rvalid     - Master read chanel output data valid
+ *   m_axi_rready     - Master read chanel output is ready.
  *
  */
 module axi_lite_read_channel_decoder #(
@@ -63,24 +84,18 @@ module axi_lite_read_channel_decoder #(
     output  wire                            connected,
     input   wire                            aclk,
     input   wire                            arstn,
-    //master interface
-    //input master read address
     input   wire [ADDRESS_WIDTH-1:0]        s_axi_araddr,
     input   wire [2:0]                      s_axi_arprot,
     input   wire                            s_axi_arvalid,
     output  wire                            s_axi_arready,
-    //output master read data
     output  wire [BUS_WIDTH*8-1:0]          s_axi_rdata,
     output  wire [1:0]                      s_axi_rresp,
     output  wire                            s_axi_rvalid,
     input   wire                            s_axi_rready,
-    //slave interfaces
-    //output slave read address
     output  wire [ADDRESS_WIDTH-1:0]        m_axi_araddr,
     output  wire [2:0]                      m_axi_arprot,
     output  wire                            m_axi_arvalid,
     input   wire                            m_axi_arready,
-    //input slave read data
     input   wire [BUS_WIDTH*8-1:0]          m_axi_rdata,
     input   wire [1:0]                      m_axi_rresp,
     input   wire                            m_axi_rvalid,
@@ -95,6 +110,13 @@ module axi_lite_read_channel_decoder #(
   
   assign connected = w_connected;
   
+  //Group: Instantiated Modules
+
+  /*
+   * Module: inst_addr_buffer
+   *
+   * Buffer for the address
+   */
   holdbuffer #(
     .BUS_WIDTH(ADDRESS_WIDTH+3)
   ) inst_addr_buffer (
@@ -114,6 +136,11 @@ module axi_lite_read_channel_decoder #(
     .m_data_ack(1'b0)
   );
 
+  /*
+   * Module: inst_addr_verify
+   *
+   * Decoder for address bus.
+   */
   bus_addr_decoder #(
     .ADDRESS_WIDTH(ADDRESS_WIDTH),
     .ADDRESS(SLAVE_ADDRESS),
@@ -128,7 +155,12 @@ module axi_lite_read_channel_decoder #(
   );
   
   generate
-    if(DATA_BUFFER == 1) begin : gen_DATA_BUFFER
+    if(DATA_BUFFER != 0) begin : gen_DATA_BUFFER
+      /*
+      * Module: inst_data_resp_buffer
+      *
+      * If data buffer enabled, this holdbuffer will be generated.
+      */
       holdbuffer #(
         .BUS_WIDTH(BUS_WIDTH*8+2)
       ) inst_data_buffer (
@@ -154,6 +186,7 @@ module axi_lite_read_channel_decoder #(
       assign m_axi_rready = s_axi_rready & w_connected;
     end
     
+    // No timeout, keep signals active low (0).
     if(TIMEOUT_BEATS == 0) begin : gen_NO_TIMEOUT
       always @(posedge aclk)
       begin
@@ -171,10 +204,12 @@ module axi_lite_read_channel_decoder #(
           r_timeout_counter <= {32{1'b0}};
           r_timeout <= r_timeout;
           
+          //if the address or data not valid and we are connected, count beats.
           if(!s_axi_arvalid && !m_axi_rvalid && w_connected)
           begin
             r_timeout_counter <= r_timeout_counter + 1;
             
+            // once we hit the beats, lets trigger the timeout signal.
             if(r_timeout_counter >= TIMEOUT_BEATS)
             begin
               r_timeout_counter <= r_timeout_counter;
@@ -182,6 +217,7 @@ module axi_lite_read_channel_decoder #(
             end
           end
           
+          //if timeout is set, reset it to 0 and reset counter (this is to keep it to a single clock cycle)
           if(r_timeout)
           begin
             r_timeout_counter <= {32{1'b0}};

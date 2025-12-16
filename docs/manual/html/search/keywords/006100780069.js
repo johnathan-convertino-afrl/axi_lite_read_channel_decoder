@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("axi",["Module","File"],[["axi_lite_read_address_decoder",,[[,,,,0,"File:axi_lite_read_channel_decoder.v:axi_lite_read_address_decoder","SystemVerilogModule:axi_lite_read_address_decoder"]]],["axi_lite_read_channel_decoder",,[[,"axi_lite_read_channel_decoder.v",,,1,"File:axi_lite_read_channel_decoder.v:axi_lite_read_channel_decoder.v"]]]]);

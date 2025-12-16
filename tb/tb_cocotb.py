@@ -1,9 +1,9 @@
 #******************************************************************************
-# file:    tb_cocotb_axi_lite.py
+# file:    tb_cocotb.py
 #
 # author:  JAY CONVERTINO
 #
-# date:    2025/03/04
+# date:    2025/12/16
 #
 # about:   Brief
 # Cocotb test bench
@@ -98,7 +98,7 @@ async def increment_test_read(dut):
 
 
 # Function: increment_test_random_ready_read_data
-# Coroutine that is identified as a test routine. Setup to read from gpio
+# Coroutine that is identified as a test routine. Read data from the device at the proper address and region, randomize read data channel ready.
 #
 # Parameters:
 #   dut - Device under test passed from cocotb.
@@ -127,7 +127,7 @@ async def increment_test_random_ready_read_data(dut):
     assert data.data == payload_bytes, "Data written to RAM does not match read data."
     
 # Function: increment_test_random_ready_read_addr
-# Coroutine that is identified as a test routine. Setup to read from gpio
+# Coroutine that is identified as a test routine. Read data from the device at the proper address and region, randomize address channel ready.
 #
 # Parameters:
 #   dut - Device under test passed from cocotb.
@@ -156,7 +156,7 @@ async def increment_test_random_ready_read_addr(dut):
     assert data.data == payload_bytes, "Data written to RAM does not match read data."
     
 # Function: increment_test_timeout_no_answer
-# Coroutine that is identified as a test routine. Setup to read from gpio
+# Coroutine that is identified as a test routine. Check if timeout will work as it should.
 #
 # Parameters:
 #   dut - Device under test passed from cocotb.
@@ -186,12 +186,8 @@ async def increment_test_timeout_no_answer(dut):
     
     await RisingEdge(dut.aclk)
 
-# Function: in_reset
-# Coroutine that is identified as a test routine. This ro
-  
-    
 # Function: increment_test_random_ready_timeout_no_answer
-# Coroutine that is identified as a test routine. Setup to read from gpio
+# Coroutine that is identified as a test routine. Check if the timeout will work with random data read channel ready.
 #
 # Parameters:
 #   dut - Device under test passed from cocotb.

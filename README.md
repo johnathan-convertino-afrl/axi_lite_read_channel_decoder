@@ -1,5 +1,5 @@
-# APB3 SLAVE
-### APB3 slave to Analog Devices uP interface
+# AXI Lite Read Channel Decoder
+### Decoded addresses applied to a axi lite channel. Allow data to pass if matched.
 ---
 
 ![image](docs/manual/img/AFRL.png)
@@ -10,7 +10,7 @@
   
   date: 2024.03.19
   
-  details: Interface analog devices uP interface devices to APB3 bus
+  details: Decoded addresses applied to a axi lite channel. Allow data to pass if matched.
   
   license: MIT   
    
@@ -31,8 +31,8 @@
 ### DOCUMENTATION
   For detailed usage information, please navigate to one of the following sources. They are the same, just in a different format.
 
-  - [up_apb3.pdf](docs/manual/up_apb3.pdf)
-  - [github page](https://johnathan-convertino-afrl.github.io/up_apb3/)
+  - [axi_lite_read_channel_decoder.pdf](docs/manual/axi_lite_read_channel_decoder.pdf)
+  - [github page](https://johnathan-convertino-afrl.github.io/axi_lite_read_channel_decoder/)
 
 ### PARAMETERS
 
