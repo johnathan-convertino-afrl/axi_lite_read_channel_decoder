@@ -36,17 +36,20 @@
 
 ### PARAMETERS
 
-* ADDRESS_WIDTH : Bit width of the address bus.
-* BUS_WIDTH     : Bus width in number of bytes.
+ *   ADDRESS_WIDTH    : Width of the AXI LITE address port in bits.
+ *   BUS_WIDTH        : Width of the AXI LITE bus data port in bytes.
+ *   DATA_BUFFER      : Buffer data channel, 0 to disable.
+ *   TIMEOUT_BEATS    : Number of clock cycles (beats) to count till timeout. 0 disables timeout.
+ *   SLAVE_ADDRESS    : Array of Addresses for each slave (0 = slave 0 and so on).
+ *   SLAVE_REGION     : Region for the address that is valid for the SLAVE ADDRESS.
 
 ### COMPONENTS
 #### SRC
 
-* up_apb3.v
+* axi_lite_read_channel_decoder.v
 
 #### TB
 
-* tb_apb3.v
 * tb_cocotb.py
 * tb_cocotb.v
   
